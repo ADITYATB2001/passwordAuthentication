@@ -3,6 +3,7 @@ const express=require("express");
 const bodyParser=require("body-parser");
 const mongoose=require("mongoose");
 const ejs=require("ejs");
+const encrypt=require("mongoose-encryption");
 
 const app=express();
 
@@ -13,10 +14,14 @@ app.set('view engine','ejs');
 
 mongoose.connect("mongodb://127.0.0.1:27017/userDB").then(function(){console.log("connected successfully")}).catch(function(err){console.log(err)});
 
-const userSchema={
+const userSchema=new mongoose.Schema({
     username:String,
     password:String
-};
+});
+
+const secret="This is my password";
+
+userSchema.plugin(encrypt,{secret:secret,encryptedFields:["password"]});
 
 const User=mongoose.model("user",userSchema);
 
@@ -68,10 +73,20 @@ app.post("/login",function(req,res){
 
 
 
-
-
-
 app.listen(3000,function(){
 
     console.log("server running wwith port 3000");
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
